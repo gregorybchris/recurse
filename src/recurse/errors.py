@@ -1,0 +1,2 @@
+class RecurseError(Exception):
+    pass

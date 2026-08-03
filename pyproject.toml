@@ -1,0 +1,79 @@
+[project]
+authors = [
+    { name = "Chris Gregory", email = "christopher.b.gregory@gmail.com" },
+]
+dependencies = ["rich>=15.0.0", "typer>=0.27.0"]
+description = "Recurse."
+keywords = ["recurse"]
+license = "Apache-2.0"
+name = "recurse"
+readme = "README.md"
+requires-python = ">=3.14"
+version = "0.1.0"
+
+[project.scripts]
+recurse = "recurse.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=9.1.1", "ruff>=0.16.0", "ty>=0.0.63"]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/recurse"]
+
+[project.urls]
+repository = "https://github.com/gregorybchris/recurse"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ty.environment]
+python-version = "3.14"
+
+[tool.ruff]
+line-length = 120
+src = ["src"]
+
+[tool.ruff.lint]
+ignore = ["D100", "D104", "FIX002", "TD002", "TD003"]
+select = [
+    "A",
+    "ARG",
+    "B",
+    "BLE",
+    "C4",
+    "E",
+    "EM",
+    "ERA",
+    "F",
+    "FIX",
+    "G",
+    "I",
+    "ICN",
+    "ISC",
+    "LOG",
+    "N",
+    "PL",
+    "PT",
+    "PTH",
+    "PLR",
+    "RET",
+    "RUF",
+    "S",
+    "SIM",
+    "SLF",
+    "T20",
+    "TC",
+    "TD",
+    "TID",
+    "W",
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"**/*.py" = ["A001", "A002", "PLR0912", "PLR0915", "PLR0913", "T201", "T203"]
+"**/tests/**/*.py" = ["SLF", "PLR2004", "PLR6301", "S101"]
+"**/src/recurse/derivatives.py" = ["S101"]
