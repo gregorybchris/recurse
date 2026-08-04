@@ -1,4 +1,3 @@
-# --- Python -------------------------------------------------------------------
 __pycache__/
 *.py[oc]
 build/
@@ -12,12 +11,5 @@ htmlcov/
 .uv/
 .ruff_cache/
 .ty_cache/
-
-# --- Editor / OS cruft --------------------------------------------------------
 .DS_Store
 .vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-.idea/
-*.swp
-*.png
