@@ -43,3 +43,11 @@ class TestPolynomial:
     def test_parse_multi_term_quadratic_with_hole(self) -> None:
         polynomial = Polynomial.parse("5x^3 - 2")
         assert polynomial.coefficients == [-2, 0, 0, 5]
+
+    def test_parse_no_coefficient(self) -> None:
+        polynomial = Polynomial.parse("x")
+        assert polynomial.coefficients == [0, 1]
+
+    def test_parse_backwards_terms(self) -> None:
+        polynomial = Polynomial.parse("1 + x^2")
+        assert polynomial.coefficients == [1, 0, 1]

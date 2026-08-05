@@ -17,8 +17,12 @@ class Polynomial:
 
     @classmethod
     def parse_coefficient(cls, coefficient: Optional[str]) -> int:
-        if coefficient is None or coefficient == "":
-            return 0
+        if coefficient is None:
+            return 1
+        if coefficient == "":
+            return 1
+        if coefficient == "+":
+            return 1
         if coefficient == "-":
             return -1
         return int(coefficient)
@@ -38,9 +42,9 @@ class Polynomial:
         s = s.replace(" ", "").replace("+", " +").replace("-", " -").strip()
         terms = [x.replace(" ", "") for x in s.split(" ")]
 
-        coefficients = []
-        prev_exponent = -1
-        for term in terms[::-1]:
+        exponent_map = {}
+        max_exponent = 0
+        for term in terms:
             # TODO: Support decimal coefficients
             pattern = re.compile("^([-+]?[0-9]*)?(x(\\^([0-9]+))?)?$")
             match = re.match(pattern, term)
@@ -50,11 +54,15 @@ class Polynomial:
 
             coefficient = cls.parse_coefficient(match.group(1))
             exponent = cls.parse_exponent(match.group(2), match.group(4))
+            exponent_map[exponent] = coefficient
+            max_exponent = max(max_exponent, exponent)
 
-            if exponent - prev_exponent > 1:
-                coefficients.extend([0] * (exponent - prev_exponent - 1))
-            prev_exponent = exponent
-            coefficients.append(coefficient)
+        coefficients = []
+        for exponent in range(max_exponent + 1):
+            if exponent in exponent_map:
+                coefficients.append(exponent_map[exponent])
+            else:
+                coefficients.append(0)
 
         return cls(coefficients)
 
