@@ -1,4 +1,8 @@
-from recurse.tictactoe import Board, Checker, Game, Mark, Player, Space
+import re
+
+import pytest
+
+from recurse.tictactoe import Board, Checker, Game, InvalidMoveError, Mark, Player, Space
 
 
 class TestMark:
@@ -79,3 +83,9 @@ class TestGame:
         game.make_move(Space.TopRight)
         assert game.board.get(Space.TopRight) == Mark.X
         assert game.current_player == Player.O
+
+    def test_make_taken_move(self) -> None:
+        game = Game()
+        game.make_move(Space.TopLeft)
+        with pytest.raises(InvalidMoveError, match=re.escape("board space top-left not empty")):
+            game.make_move(Space.TopLeft)
