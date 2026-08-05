@@ -1,4 +1,4 @@
-from enum import StrEnum, auto
+from enum import StrEnum
 from typing import Iterator, Optional, Self
 
 
@@ -7,21 +7,21 @@ class InvalidMoveError(Exception):
 
 
 class Mark(StrEnum):
-    E = auto()
-    X = auto()
-    O = auto()  # noqa: E741
+    E = "E"
+    X = "X"
+    O = "O"  # noqa: E741
 
 
 class Space(StrEnum):
-    TopLeft = auto()
-    TopCenter = auto()
-    TopRight = auto()
-    MiddleLeft = auto()
-    MiddleCenter = auto()
-    MiddleRight = auto()
-    BottomLeft = auto()
-    BottomCenter = auto()
-    BottomRight = auto()
+    TopLeft = "top-left"
+    TopCenter = "top-center"
+    TopRight = "top-right"
+    MiddleLeft = "middle-left"
+    MiddleCenter = "middle-center"
+    MiddleRight = "middle-right"
+    BottomLeft = "bottom-left"
+    BottomCenter = "bottom-center"
+    BottomRight = "bottom-right"
 
     @classmethod
     def from_int(cls, value: int) -> Self:
@@ -29,10 +29,15 @@ class Space(StrEnum):
         value_map = {i + 1: space for i, space in enumerate(Space)}
         return value_map[value]
 
+    def to_int(self) -> int:
+        # Dial pad layout (1 indexed)
+        value_map = {space: i + 1 for i, space in enumerate(Space)}
+        return value_map[self]
+
 
 class Player(StrEnum):
-    X = auto()
-    O = auto()  # noqa: E741
+    X = "X"
+    O = "O"  # noqa: E741
 
     def get_mark(self) -> Mark:
         match self:
@@ -56,6 +61,7 @@ class Board:
 
     def __repr__(self) -> str:
         ret = ""
+        ret += "-" * 13 + "\n"
         for space_value in range(1, 10):
             space = Space.from_int(space_value)
             mark = self.get(space)
@@ -64,6 +70,8 @@ class Board:
 
             if space_value % 3 == 0:
                 ret += "|\n"
+                ret += "-" * 13 + "\n"
+
         return ret
 
 
@@ -113,7 +121,8 @@ class Game:
 
     def make_move(self, space: Space) -> None:
         if self.board.get(space) != Mark.E:
-            raise InvalidMoveError
+            msg = f"board space {space} not empty"
+            raise InvalidMoveError(msg)
         mark = self.current_player.get_mark()
         self.board.set(space, mark)
         self.switch_current_player()
@@ -129,12 +138,12 @@ class Game:
                 try:
                     space_int = int(player_input)
                 except ValueError:
-                    print("invalid space number, must be an int")
+                    print("invalid space number, must be an integer from 1-9")
                     continue
 
                 try:
                     space = Space.from_int(space_int)
-                except ValueError:
+                except KeyError:
                     print("invalid space number, must be 1-9")
                     continue
 
@@ -148,7 +157,7 @@ class Game:
                         game_over = True
                         continue
                 except InvalidMoveError:
-                    print(f"invalid move, space {space} already taken")
+                    print(f"invalid move, space {space.to_int()} already taken")
                     continue
 
 
