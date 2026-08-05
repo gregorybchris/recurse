@@ -67,6 +67,35 @@ class Board:
         return ret
 
 
+class Checker:
+    @classmethod
+    def iter_triples(cls, board: Board) -> Iterator[list[Mark]]:
+        triples_ints = [
+            # Rows
+            (1, 2, 3),
+            (4, 5, 6),
+            (7, 8, 9),
+            # Columns
+            (1, 4, 7),
+            (2, 5, 8),
+            (3, 6, 9),
+            # Diagonals
+            (1, 5, 9),
+            (3, 5, 7),
+        ]
+        for triple_ints in triples_ints:
+            yield [board.get(Space.from_int(i)) for i in triple_ints]
+
+    @classmethod
+    def get_winner(cls, board: Board) -> Optional[Player]:
+        for triple in cls.iter_triples(board):
+            if all(mark == Mark.X for mark in triple):
+                return Player.X
+            if all(mark == Mark.O for mark in triple):
+                return Player.O
+        return None
+
+
 class Game:
     board: Board
     current_player: Player
@@ -75,45 +104,19 @@ class Game:
         self.board = Board()
         self.current_player = Player.X
 
-    def make_move(self, space: Space) -> None:
-        if self.board.get(space) != Mark.E:
-            raise InvalidMoveError
-        mark = self.current_player.get_mark()
-        self.board.set(space, mark)
-
-    def iter_rows(self) -> Iterator[list[Mark]]:
-        yield [self.board.get(s) for s in (Space.TopLeft, Space.TopCenter, Space.TopRight)]
-        yield [self.board.get(s) for s in (Space.MiddleLeft, Space.MiddleCenter, Space.MiddleRight)]
-        yield [self.board.get(s) for s in (Space.BottomLeft, Space.BottomCenter, Space.BottomRight)]
-
-    def iter_cols(self) -> Iterator[list[Mark]]:
-        yield [self.board.get(s) for s in (Space.TopLeft, Space.MiddleLeft, Space.BottomLeft)]
-        yield [self.board.get(s) for s in (Space.TopCenter, Space.MiddleCenter, Space.BottomCenter)]
-        yield [self.board.get(s) for s in (Space.TopRight, Space.MiddleRight, Space.BottomRight)]
-
-    def iter_diagonals(self) -> Iterator[list[Mark]]:
-        yield [self.board.get(s) for s in (Space.TopLeft, Space.MiddleCenter, Space.BottomRight)]
-        yield [self.board.get(s) for s in (Space.TopRight, Space.MiddleCenter, Space.BottomLeft)]
-
-    def iter_triples(self) -> Iterator[list[Mark]]:
-        yield from self.iter_rows()
-        yield from self.iter_cols()
-        yield from self.iter_diagonals()
-
-    def get_winner(self) -> Optional[Player]:
-        for triple in self.iter_triples():
-            if all(mark == Mark.X for mark in triple):
-                return Player.X
-            if all(mark == Mark.O for mark in triple):
-                return Player.O
-        return None
-
     def switch_current_player(self) -> None:
         match self.current_player:
             case Player.O:
                 self.current_player = Player.X
             case Player.X:
                 self.current_player = Player.O
+
+    def make_move(self, space: Space) -> None:
+        if self.board.get(space) != Mark.E:
+            raise InvalidMoveError
+        mark = self.current_player.get_mark()
+        self.board.set(space, mark)
+        self.switch_current_player()
 
     def play(self) -> None:
         game_over = False
@@ -138,10 +141,8 @@ class Game:
                 try:
                     self.make_move(space)
                     valid_input = True
-                    self.switch_current_player()
 
-                    winner = self.get_winner()
-                    if winner is not None:
+                    if winner := Checker.get_winner(self.board):
                         print(self.board)
                         print(f"winner is {winner}")
                         game_over = True
