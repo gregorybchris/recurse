@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import StrEnum, auto
 from typing import Iterator, Optional, Self
 
 
@@ -7,21 +7,21 @@ class InvalidMoveError(Exception):
 
 
 class Mark(StrEnum):
-    E = "E"
-    X = "X"
-    O = "O"  # noqa: E741
+    E = auto()
+    X = auto()
+    O = auto()  # noqa: E741
 
 
 class Space(StrEnum):
-    TopLeft = "top-left"
-    TopCenter = "top-center"
-    TopRight = "top-right"
-    MiddleLeft = "middle-left"
-    MiddleCenter = "middle-center"
-    MiddleRight = "middle-right"
-    BottomLeft = "bottom-left"
-    BottomCenter = "bottom-center"
-    BottomRight = "bottom-right"
+    TopLeft = auto()
+    TopCenter = auto()
+    TopRight = auto()
+    MiddleLeft = auto()
+    MiddleCenter = auto()
+    MiddleRight = auto()
+    BottomLeft = auto()
+    BottomCenter = auto()
+    BottomRight = auto()
 
     @classmethod
     def from_int(cls, value: int) -> Self:
@@ -36,8 +36,8 @@ class Space(StrEnum):
 
 
 class Player(StrEnum):
-    X = "X"
-    O = "O"  # noqa: E741
+    X = auto()
+    O = auto()  # noqa: E741
 
     def get_mark(self) -> Mark:
         match self:
@@ -103,6 +103,10 @@ class Checker:
                 return Player.O
         return None
 
+    @classmethod
+    def is_board_full(cls, board: Board) -> bool:
+        return all(board.get(s) != Mark.E for s in Space)
+
 
 class Game:
     board: Board
@@ -154,6 +158,11 @@ class Game:
                     if winner := Checker.get_winner(self.board):
                         print(self.board)
                         print(f"winner is {winner}")
+                        game_over = True
+                        continue
+                    if Checker.is_board_full(self.board):
+                        print(self.board)
+                        print("game is a draw")
                         game_over = True
                         continue
                 except InvalidMoveError:

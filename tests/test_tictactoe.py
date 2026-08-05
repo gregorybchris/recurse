@@ -74,6 +74,13 @@ class TestChecker:
 
         assert Checker.get_winner(board) is None
 
+    def test_is_board_full(self) -> None:
+        board = Board()
+        assert not Checker.is_board_full(board)
+        for i in range(9):
+            board.set(Space.from_int(i + 1), Mark.X)
+        assert Checker.is_board_full(board)
+
 
 class TestGame:
     def test_make_first_move(self) -> None:
@@ -87,5 +94,5 @@ class TestGame:
     def test_make_taken_move(self) -> None:
         game = Game()
         game.make_move(Space.TopLeft)
-        with pytest.raises(InvalidMoveError, match=re.escape("board space top-left not empty")):
+        with pytest.raises(InvalidMoveError, match=re.escape("board space topleft not empty")):
             game.make_move(Space.TopLeft)
